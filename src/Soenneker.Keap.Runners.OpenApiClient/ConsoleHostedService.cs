@@ -50,7 +50,6 @@ public sealed class ConsoleHostedService : IHostedService
 
                     _logger.LogError(e, "Unhandled exception");
 
-                    await Task.Delay(2000, cancellationToken);
                     _exitCode = 1;
                 }
                 finally

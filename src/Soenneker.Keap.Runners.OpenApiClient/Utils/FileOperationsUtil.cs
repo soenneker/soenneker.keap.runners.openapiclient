@@ -21,7 +21,6 @@ using Soenneker.Utils.Yaml.Abstract;
 using System.Collections.Generic;
 namespace Soenneker.Keap.Runners.OpenApiClient.Utils;
 
-/// <inheritdoc cref="IFileOperationsUtil"/>
 public sealed class FileOperationsUtil : IFileOperationsUtil
 {
     private readonly ILogger<FileOperationsUtil> _logger;
@@ -123,6 +122,7 @@ public sealed class FileOperationsUtil : IFileOperationsUtil
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to delete file: {FilePath}", file);
+                        throw;
                     }
                 }
             }
@@ -144,12 +144,14 @@ public sealed class FileOperationsUtil : IFileOperationsUtil
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Failed to delete directory: {DirectoryPath}", dir);
+                    throw;
                 }
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while cleaning the directory: {DirectoryPath}", directoryPath);
+            throw;
         }
     }
 
@@ -163,8 +165,7 @@ public sealed class FileOperationsUtil : IFileOperationsUtil
 
         if (!successful)
         {
-            _logger.LogError("Build was not successful, exiting...");
-            return;
+            throw new InvalidOperationException($"The generated client failed to build: {projFilePath}");
         }
 
         string gitHubToken = EnvironmentUtil.GetVariableStrict("GH__TOKEN");
